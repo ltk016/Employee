@@ -18,7 +18,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import webapp.model.Dept;
 import webapp.service.DeptInfoService;
-import webapp.service.DeptInfoServiceTest;
+//import webapp.service.DeptInfoServiceTest;
 
 /**
  * Servlet implementation class DeptController
