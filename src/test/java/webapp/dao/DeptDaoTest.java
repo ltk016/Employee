@@ -26,7 +26,7 @@ public class DeptDaoTest {
 	ApplicationContext factory;
 
 	@Test
-	public void testSelectByDeptno() throws SQLException {
+	public void test1_SelectByDeptno() throws SQLException {
 
 		DeptDao dao = factory.getBean(DeptDao.class);
 
@@ -39,7 +39,7 @@ public class DeptDaoTest {
 	}
 
 	@Test
-	public void testSelectByDeptnoWithEmps() throws SQLException {
+	public void test2_SelectByDeptnoWithEmps() throws SQLException {
 
 		DeptDao dao = factory.getBean(DeptDao.class);
 
@@ -49,12 +49,47 @@ public class DeptDaoTest {
 		log.info("deptno = " + dept.getDeptno());
 		log.info("dname = " + dept.getDname());
 		log.info("loc = " + dept.getLoc());
-		
-		List<Emp> emps =dept.getEmps();
+
+		List<Emp> emps = dept.getEmps();
 
 		if (dept.getEmps() != null) {
 			for (Emp e : emps) {
-				log.info(e.getEmpno() + " " + e.getEname());
+				log.info(e.getEmpno() + " " + e.getEname() + " " + e.getJob()
+						+ " " + e.getSal() + " " + e.getMgr() + " "
+						+ e.getHireDate() + " " + e.getComm());
+			}
+		}
+	}
+
+	@Test
+	public void test3_SelectAll() {
+		DeptDao dao = factory.getBean(DeptDao.class);
+
+		List<Dept> list = dao.selectAll();
+		assertNotNull(list);
+
+		for (Dept d : list) {
+			log.info(d.getDeptno() + " " + d.getDname() + " " + d.getLoc());
+		}
+	}
+
+	@Test
+	public void test4_SelectAllWithEmps() {
+		DeptDao dao = factory.getBean(DeptDao.class);
+
+		List<Dept> list = dao.selectAllWithEmps();
+		assertNotNull(list);
+
+		for (Dept d : list) {
+			log.info(d.getDeptno() + " " + d.getDname() + " " + d.getLoc());
+
+			if (d.getEmps() != null) {
+				for (Emp e : d.getEmps()) {
+					log.info(e.getEmpno() + " " + e.getEname() + " "
+							+ e.getJob() + " " + e.getMgr() + " "
+							+ e.getHireDate() + " " + e.getSal() + " "
+							+ e.getComm());
+				}
 			}
 		}
 	}

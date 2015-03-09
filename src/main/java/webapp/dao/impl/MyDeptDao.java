@@ -22,10 +22,10 @@ import webapp.model.Dept;
 import webapp.model.Emp;
 import webapp.util.GlobalVars;
 
-public class JdbcDeptDao implements DeptDao {
+public class MyDeptDao implements DeptDao {
 
 	// static Logger log = Logger.getLogger(JdbcDeptDao.class);
-	static Log log = LogFactory.getLog(JdbcDeptDao.class);
+	static Log log = LogFactory.getLog(MyDeptDao.class);
 	DataSource dataSource;
 
 	@Override
@@ -81,11 +81,11 @@ public class JdbcDeptDao implements DeptDao {
 		List<Emp> emps = null;
 
 		try {
-			PreparedStatement pstmt = con
+			PreparedStatement prprstmnt = con
 					.prepareStatement(SELECT_BY_DEPTNO_WITH_EMPS);
-			pstmt.setInt(1, deptno);
+			prprstmnt.setInt(1, deptno);
 
-			ResultSet rs = pstmt.executeQuery();
+			ResultSet rs = prprstmnt.executeQuery();
 
 			while (rs.next()) {
 				if (dept == null) {
@@ -125,7 +125,7 @@ public class JdbcDeptDao implements DeptDao {
 
 		List<Dept> list = null;
 		Connection con = DataSourceUtils.getConnection(dataSource);
-
+		
 		try {
 			PreparedStatement prprstmnt = con.prepareStatement(SELECT_ALL);
 			ResultSet rs = prprstmnt.executeQuery();
@@ -138,10 +138,10 @@ public class JdbcDeptDao implements DeptDao {
 				d.setDeptno(rs.getInt("deptno"));
 				d.setDname(rs.getString("dname"));
 				d.setLoc(rs.getString("loc"));
-
+				
 				list.add(d);
 			}
-
+			
 		} catch (SQLException e) {
 			throw new DataRetrievalFailureException("selectAll()", e);
 		}
@@ -151,11 +151,14 @@ public class JdbcDeptDao implements DeptDao {
 
 	@Override
 	public List<Dept> selectAllWithEmps() {
+
 		log.info("###################");
 		log.info("selectAllWithEmps()");
 		log.info("###################");
 
-		List<Dept> list = null;
+		List<Emp> emps = null;
+		List<Dept> depts = null;
+		Dept dept = null;
 
 		Connection con = DataSourceUtils.getConnection(dataSource);
 		try {
@@ -163,38 +166,37 @@ public class JdbcDeptDao implements DeptDao {
 					.prepareStatement(SELECT_ALL_WITH_EMPS);
 			ResultSet rs = prprstmnt.executeQuery();
 
-			Dept dept = null;
-
 			while (rs.next()) {
-				if (list == null) {
-					list = new ArrayList<Dept>();
-				}
+				if (depts == null) {
+					depts = new ArrayList<Dept>();
+					dept = new Dept();
+					dept.setDeptno(rs.getInt("deptno"));
+					dept.setDname(rs.getString("dname"));
+					dept.setLoc(rs.getString("loc"));
+					emps = new ArrayList<Emp>();
+				}				
+				depts.add(dept);
 				
-				Dept d = new Dept(rs.getInt("deptno"), rs.getString("dname"),
-						rs.getString("loc"));
-				
-				if (!d.equals(dept)) {
-					dept = d;
-					list.add(dept);
-				}
-				
-				Emp e = new Emp();
-				e.setEmpno(rs.getInt("empno"));
-				e.setEname(rs.getString("ename"));
-				e.setJob(rs.getString("job"));
-				e.setMgr(rs.getInt("mgr"));
-				e.setHireDate(rs.getDate("hireDate"));
-				e.setSal(rs.getFloat("sal"));
-				e.setComm(rs.getFloat("comm"));
+				Emp emp = new Emp();
+				emp.setEmpno(rs.getInt("empno"));
+				emp.setEname(rs.getString("ename"));
+				emp.setJob(rs.getString("job"));
+				emp.setMgr(rs.getInt("mgr"));
+				emp.setHireDate(rs.getDate("hiredate"));
+				emp.setSal(rs.getFloat("sal"));
+				emp.setComm(rs.getFloat("comm"));
 
-//				dept.getEmps().add(e);
-			}
-
+				emps.add(emp);
+			} 		
 		} catch (SQLException e) {
-			throw new DataRetrievalFailureException("selectAll()", e);
+			throw new DataRetrievalFailureException("selectAllWithEmps()", e);
 		}
-
-		return list;
+		
+		if (dept != null) {
+			dept.setEmps(emps);
+			depts.addAll(depts);
+		}
+		return depts;
 	}
 
 }

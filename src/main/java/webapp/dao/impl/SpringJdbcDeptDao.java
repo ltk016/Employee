@@ -100,7 +100,7 @@ public class SpringJdbcDeptDao implements DeptDao {
 	}
 
 	@Override
-	public List<Dept> selectAllWithEmas() {
+	public List<Dept> selectAllWithEmps() {
 		return null;
 	}
 }

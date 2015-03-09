@@ -5,8 +5,10 @@ import static org.junit.Assert.*;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -18,6 +20,7 @@ import webapp.service.DeptInfoService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:/webapp/spring/beans.xml")
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 
 public class DeptInfoServiceTest {
 	
@@ -27,7 +30,7 @@ public class DeptInfoServiceTest {
 	ApplicationContext factory;
 	
 	@Test
-	public void testGetDeptInfo() {
+	public void test1_GetDeptInfo() {
 		log.info("### testGetDeptInfo()");
 		
 		DeptInfoService service = factory.getBean(DeptInfoService.class);
@@ -41,7 +44,7 @@ public class DeptInfoServiceTest {
 		
 	}
 	@Test
-	public void testGetDeptInfoWithEmps(){
+	public void test2_GetDeptInfoWithEmps(){
 		log.info("### testGetDeptInfoWithEmps()");
 		
 		DeptInfoService service = factory.getBean(DeptInfoService.class);
@@ -57,6 +60,38 @@ public class DeptInfoServiceTest {
 				log.info(e.getEmpno() + " " + e.getEname());
 			}
 		}
+	}
+	
+	@Test
+	public void test3_GetDeptInfoAll() {
+		DeptInfoService service = factory.getBean(DeptInfoService.class);
+		List<Dept> list = service.getDeptInfoAll();
+		assertNotNull(list);
+		
+		for (Dept d : list) {
+			log.info(d.getDeptno() + " " + d.getDname() + " " + d.getLoc());
+		}		
+	}
+
+	
+	@Test
+	public void test4_GetDeptInfoAllWithEmps() {
+		DeptInfoService service = factory.getBean(DeptInfoService.class);
+		List<Dept> list = service.getDeptInfoAllWithEmps();
+		assertNotNull(list);
+		
+		for (Dept d : list) {
+			log.info(d.getDeptno() + " " + d.getDname() + " " + d.getLoc());
+			
+			if (d.getEmps() != null) {
+				for (Emp e : d.getEmps()) {
+					log.info(e.getEmpno() + " " + e.getEname() + " "
+							+ e.getJob() + " " + e.getMgr() + " "
+							+ e.getHireDate() + " " + e.getSal() + " "
+							+ e.getComm());
+				}
+			}
+		}		
 	}
 }
 
